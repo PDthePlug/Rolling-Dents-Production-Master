@@ -8,4 +8,6 @@ Production-master repository: `PDthePlug/Rolling-Dents-Production-Master`
 
 This repository is the independent PDCONNECT production-hardening track. The engineer's source repository remains upstream and is not modified by Production Master work unless explicitly requested.
 
-The import is an exact working-tree copy of the approved upstream at the commit above. File-by-file SHA-256 parity is checked before the import is committed. This provenance file and the import workflow are the only Production Master control files intentionally outside upstream parity.
+The initial import was proven file-for-file against the approved upstream baseline using SHA-256 checks. Production Master deliberately diverges from that baseline only through reviewed hardening commits after the import point.
+
+Baseline hardening began by correcting repository-execution defects discovered during clean CI: executable script modes and Next.js internal-link lint errors. These corrections exist only in Production Master unless explicitly merged upstream.
