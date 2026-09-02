@@ -1,0 +1,88 @@
+name: Import Rolling Dents upstream
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import-upstream.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import-and-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout production master
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout approved upstream
+        uses: actions/checkout@v4
+        with:
+          repository: PDthePlug/Rolling-Dents
+          ref: main
+          path: _upstream
+          fetch-depth: 1
+
+      - name: Import exact upstream working tree
+        id: import
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(git -C _upstream rev-parse HEAD)"
+          SOURCE_TREE_SHA="$(git -C _upstream rev-parse HEAD^{tree})"
+          rsync -a --delete \
+            --exclude='.git/' \
+            --exclude='_upstream/' \
+            --exclude='PROVENANCE.md' \
+            --exclude='.github/workflows/import-upstream.yml' \
+            _upstream/ ./
+          rm -rf _upstream
+          cat > PROVENANCE.md <<EOF
+          # Rolling Dents Production Master — Provenance
+
+          Source repository: \`PDthePlug/Rolling-Dents\`
+          Source branch: \`main\`
+          Source commit SHA: \`${SOURCE_SHA}\`
+          Source tree SHA: \`${SOURCE_TREE_SHA}\`
+          Production-master repository: \`PDthePlug/Rolling-Dents-Production-Master\`
+
+          This repository is the independent PDCONNECT production-hardening track. The engineer's source repository remains upstream and is not modified by Production Master work unless explicitly requested.
+
+          The import is an exact working-tree copy of the approved upstream at the commit above, with this provenance file and the import workflow intentionally retained as Production Master controls.
+          EOF
+          echo "source_sha=${SOURCE_SHA}" >> "$GITHUB_OUTPUT"
+          echo "source_tree_sha=${SOURCE_TREE_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Commit imported baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No upstream changes to import.'
+          else
+            git commit -m "chore: import Rolling-Dents upstream ${{ steps.import.outputs.source_sha }}"
+            git push origin HEAD:main
+          fi
+
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Clean dependency install
+        run: npm ci
+
+      - name: Lint baseline
+        run: npm run lint
+
+      - name: Build and test baseline
+        run: npm test
