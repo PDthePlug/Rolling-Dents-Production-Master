@@ -10,7 +10,7 @@ async function assertSourceMetadataContract() {
 
   assert.match(layout, /AutoBodyShop/);
   assert.match(layout, /LocalBusiness/);
-  assert.match(layout, /011 794 2454/);
+  assert.match(layout, /\+27 11 794 2454/);
   assert.match(rollingDents, /Rolling Dents/);
   assert.doesNotMatch(layout, /codex-preview/i);
 }
