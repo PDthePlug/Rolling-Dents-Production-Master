@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Camera, Mail, MapPin, MessageCircle, Phone, ThumbsUp } from "lucide-react";
 import {
   ADDRESS, EMAIL, FACEBOOK_URL, INSTAGRAM_URL, MAPS_URL, navigation,
@@ -9,10 +10,10 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="footer-main">
         <div className="footer-intro">
-          <a className="brand footer-logo" href="/">
+          <Link className="brand footer-logo" href="/">
             <span className="brand-mark">RD</span>
             <span className="brand-type"><strong>ROLLING DENTS</strong><small>PERFECTION IN EVERY PANEL</small></span>
-          </a>
+          </Link>
           <p>Complete automotive body repair, spray painting, dent repair, parts replacement and professional detailing in Laser Park, Roodepoort.</p>
           <div className="social-links">
             <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" aria-label="Rolling Dents on Instagram"><Camera /></a>

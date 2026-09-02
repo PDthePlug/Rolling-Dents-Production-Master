@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ChevronRight, Menu, MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,13 +12,13 @@ import { navigation, PHONE_DISPLAY, whatsappUrl } from "@/lib/rolling-dents";
 export function SiteHeader() {
   return (
     <header className="topbar">
-      <a className="brand" href="/" aria-label="Rolling Dents home">
+      <Link className="brand" href="/" aria-label="Rolling Dents home">
         <span className="brand-mark" aria-hidden="true">RD</span>
         <span className="brand-type">
           <strong>ROLLING DENTS</strong>
           <small>AUTOBODY · LASER PARK</small>
         </span>
-      </a>
+      </Link>
 
       <nav className="desktop-nav" aria-label="Primary navigation">
         {navigation.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}
@@ -40,7 +41,7 @@ export function SiteHeader() {
             <SheetDescription className="text-left">Complete automotive body repair in Laser Park.</SheetDescription>
           </SheetHeader>
           <nav className="mobile-nav" aria-label="Mobile navigation">
-            <SheetClose asChild><a href="/">Home <ChevronRight /></a></SheetClose>
+            <SheetClose asChild><Link href="/">Home <ChevronRight /></Link></SheetClose>
             {navigation.map((item) => <SheetClose asChild key={item.href}><a href={item.href}>{item.label}<ChevronRight /></a></SheetClose>)}
             <SheetClose asChild><a href="/service-areas">Areas We Serve <ChevronRight /></a></SheetClose>
           </nav>
