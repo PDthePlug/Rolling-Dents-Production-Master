@@ -2,17 +2,12 @@ name: Import Rolling Dents upstream
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/import-upstream.yml'
 
 permissions:
   contents: write
 
 jobs:
   import-and-verify:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout production master
