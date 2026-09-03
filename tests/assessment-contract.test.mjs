@@ -28,15 +28,17 @@ test("assessment persistence contract is present", async () => {
   assert.equal(config.r2, "MEDIA");
 });
 
-test("conversion home links to the dedicated repair process", async () => {
-  const [home, processPage, header] = await Promise.all([
+test("conversion home and canonical navigation expose the dedicated repair process", async () => {
+  const [home, processPage, header, businessConfig] = await Promise.all([
     source("app/page.tsx"),
     source("app/repair-process/page.tsx"),
     source("components/rolling-dents/site-header.tsx"),
+    source("lib/rolling-dents.ts"),
   ]);
 
   assert.match(home, /\/repair-process/);
   assert.doesNotMatch(home, /area-teaser/);
   assert.match(processPage, /Six stages\. One clear next step at a time\./);
-  assert.match(header, /Repair Process/);
+  assert.match(header, /import \{ navigation,/);
+  assert.match(businessConfig, /label: "Repair Process", href: "\/repair-process"/);
 });
