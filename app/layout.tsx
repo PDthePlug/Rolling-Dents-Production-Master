@@ -3,21 +3,18 @@ import "./globals.css";
 import { MobileActions } from "@/components/rolling-dents/mobile-actions";
 import { SiteFooter } from "@/components/rolling-dents/site-footer";
 import { SiteHeader } from "@/components/rolling-dents/site-header";
-import {
-  ADDRESS, EMAIL, FACEBOOK_URL, INSTAGRAM_URL, services,
-  SITE_URL, serviceAreas,
-} from "@/lib/rolling-dents";
+import { EMAIL, INSTAGRAM_URL, services, SITE_URL, serviceAreas } from "@/lib/rolling-dents";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Rolling Dents | Panel Beaters & Autobody Repair Roodepoort", template: "%s | Rolling Dents" },
-  description: "RMI-approved panel beaters in Laser Park, Roodepoort. Accident repair, dent repair, spray painting, parts replacement, paint correction and detailing.",
+  title: { default: "Rolling Dents | Autobody Repair Roodepoort", template: "%s | Rolling Dents" },
+  description: "Complete automotive body repair in Laser Park, Roodepoort, including paint shop services, full vehicle resprays, paintless dent removal, parts replacement, paint correction, detailing and classic restorations.",
   applicationName: "Rolling Dents",
   authors: [{ name: "Rolling Dents" }],
   creator: "Rolling Dents",
   publisher: "Rolling Dents",
   category: "Automotive body repair",
-  keywords: ["panel beaters Roodepoort", "autobody repair Roodepoort", "dent repair Laser Park", "spray painting Roodepoort", "accident repair Johannesburg West", "car respray Honeydew"],
+  keywords: ["panel beaters Roodepoort", "autobody repair Roodepoort", "paint shop Laser Park", "paintless dent removal Roodepoort", "full vehicle respray Roodepoort", "paint correction Roodepoort"],
   alternates: { canonical: SITE_URL },
   openGraph: {
     title: "Rolling Dents — Dents. Damage. Gone.",
@@ -39,17 +36,20 @@ const localBusiness = {
   "@type": ["AutoBodyShop", "LocalBusiness"],
   "@id": `${SITE_URL}/#business`,
   name: "Rolling Dents",
-  description: "RMI-approved complete automotive body repair specialist in Laser Park, Roodepoort.",
+  description: "Complete automotive body repair specialist in Laser Park, Roodepoort.",
   url: SITE_URL,
   telephone: "+27 11 794 2454",
   email: EMAIL,
   image: [`${SITE_URL}/og.png`, `${SITE_URL}/media/volkswagen-spray-booth.webp`, `${SITE_URL}/media/black-gtr-finish.webp`],
-  priceRange: "$$",
   address: { "@type": "PostalAddress", streetAddress: "1510 Zeiss Road, Unit 1, Block 2, Laser Park", addressLocality: "Roodepoort", addressRegion: "Gauteng", addressCountry: "ZA" },
   openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "07:30", closes: "17:00" }],
   areaServed: serviceAreas.map((name) => ({ "@type": "Place", name })),
-  sameAs: [INSTAGRAM_URL, FACEBOOK_URL],
-  hasOfferCatalog: { "@type": "OfferCatalog", name: "Automotive body repair services", itemListElement: services.map((service) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: service.title, url: `${SITE_URL}/services/${service.slug}` } })) },
+  sameAs: [INSTAGRAM_URL],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Rolling Dents services",
+    itemListElement: services.map((service) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: service.title, url: `${SITE_URL}/services/${service.slug}` } })),
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

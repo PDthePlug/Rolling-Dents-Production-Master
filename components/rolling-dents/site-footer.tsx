@@ -14,14 +14,22 @@ export function SiteFooter() {
             <span className="brand-mark">RD</span>
             <span className="brand-type"><strong>ROLLING DENTS</strong><small>PERFECTION IN EVERY PANEL</small></span>
           </Link>
-          <p>Complete automotive body repair, spray painting, dent repair, parts replacement and professional detailing in Laser Park, Roodepoort.</p>
+          <p>Complete automotive body repair, paint, dent, parts, detailing and restoration services in Laser Park, Roodepoort.</p>
           <div className="social-links">
             <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" aria-label="Rolling Dents on Instagram"><Camera /></a>
-            <a href={FACEBOOK_URL} target="_blank" rel="noreferrer" aria-label="Rolling Dents on Facebook"><ThumbsUp /></a>
+            <a href={FACEBOOK_URL} target="_blank" rel="noreferrer" aria-label="Find Rolling Dents on Facebook"><ThumbsUp /></a>
           </div>
         </div>
-        <div className="footer-column"><h2>Explore</h2>{navigation.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}<a href="/service-areas">Areas We Serve</a></div>
-        <div className="footer-column"><h2>Services</h2>{services.slice(0, 6).map((service) => <a key={service.slug} href={`/services/${service.slug}`}>{service.shortTitle}</a>)}</div>
+        <div className="footer-column">
+          <h2>Explore</h2>
+          {navigation.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
+          <Link href="/reviews">Reviews</Link>
+          <Link href="/service-areas">Areas We Serve</Link>
+        </div>
+        <div className="footer-column">
+          <h2>Services</h2>
+          {services.map((service) => <Link key={service.slug} href={`/services/${service.slug}`}>{service.shortTitle}</Link>)}
+        </div>
         <div className="footer-contact">
           <h2>Visit the workshop</h2>
           <a href={MAPS_URL} target="_blank" rel="noreferrer"><MapPin />{ADDRESS}</a>
@@ -33,8 +41,8 @@ export function SiteFooter() {
       </div>
       <div className="footer-bottom">
         <span>© {new Date().getFullYear()} Rolling Dents. All rights reserved.</span>
-        <span>RMI approved · Laser Park, Roodepoort</span>
-        <span>Website by <strong>PDCONNECT</strong></span>
+        <span>Laser Park · Roodepoort</span>
+        <span>Monday–Friday · 07:30–17:00</span>
       </div>
     </footer>
   );

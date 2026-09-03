@@ -7,26 +7,14 @@ import {
   Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader,
   SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet";
-import { PHONE_DISPLAY, whatsappUrl } from "@/lib/rolling-dents";
-
-const navigation = [
-  { label: "Services", href: "/services" },
-  { label: "Repair Process", href: "/repair-process" },
-  { label: "Our Work", href: "/our-work" },
-  { label: "Insurance", href: "/insurance-repairs" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-] as const;
+import { navigation, PHONE_DISPLAY, whatsappUrl } from "@/lib/rolling-dents";
 
 export function SiteHeader() {
   return (
     <header className="topbar">
       <Link className="brand" href="/" aria-label="Rolling Dents home">
         <span className="brand-mark" aria-hidden="true">RD</span>
-        <span className="brand-type">
-          <strong>ROLLING DENTS</strong>
-          <small>AUTOBODY · LASER PARK</small>
-        </span>
+        <span className="brand-type"><strong>ROLLING DENTS</strong><small>AUTOBODY · LASER PARK</small></span>
       </Link>
 
       <nav className="desktop-nav" aria-label="Primary navigation">
@@ -35,15 +23,11 @@ export function SiteHeader() {
 
       <div className="desktop-actions">
         <a className="phone-link" href="tel:+27117942454"><Phone />{PHONE_DISPLAY}</a>
-        <Button asChild className="orange-button header-cta">
-          <Link href="/estimate">Start assessment</Link>
-        </Button>
+        <Button asChild className="orange-button header-cta"><Link href="/estimate">Start assessment</Link></Button>
       </div>
 
       <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="mobile-menu-button" aria-label="Open menu"><Menu /></Button>
-        </SheetTrigger>
+        <SheetTrigger asChild><Button variant="ghost" size="icon" className="mobile-menu-button" aria-label="Open menu"><Menu /></Button></SheetTrigger>
         <SheetContent className="mobile-sheet" side="right">
           <SheetHeader>
             <SheetTitle className="text-left text-2xl font-black tracking-tight">ROLLING DENTS</SheetTitle>
