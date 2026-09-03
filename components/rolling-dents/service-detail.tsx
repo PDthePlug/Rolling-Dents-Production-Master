@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight, Check, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CtaBanner } from "@/components/rolling-dents/cta-banner";
@@ -11,13 +13,13 @@ export function ServiceDetail({ service }: { service: Service }) {
       <PageHero eyebrow={service.kicker} title={service.title} description={service.summary} image={service.image} imageAlt={service.imageAlt} />
 
       <section className="service-intro section-light">
-        <div><p className="section-kicker">THE RIGHT REPAIR STARTS WITH THE PANEL</p><h2>Repair the damage. Restore the finish.</h2></div>
-        <div><p>{service.description}</p><Button asChild className="orange-button content-button"><a href={whatsappUrl(`Hi Rolling Dents, I need help with ${service.shortTitle.toLowerCase()}.`)} target="_blank" rel="noreferrer"><MessageCircle /> Ask about this repair</a></Button></div>
+        <div><p className="section-kicker">THE RIGHT REPAIR STARTS WITH THE VEHICLE</p><h2>Scope the condition. Then choose the process.</h2></div>
+        <div><p>{service.description}</p><Button asChild className="orange-button content-button"><a href={whatsappUrl(`Hi Rolling Dents, I need help with ${service.shortTitle.toLowerCase()}.`)} target="_blank" rel="noreferrer"><MessageCircle /> Ask about this service</a></Button></div>
       </section>
 
       <section className="ideal-section">
-        <div className="ideal-image"><img src={service.image} alt={service.imageAlt} /></div>
-        <div className="ideal-copy"><p className="section-kicker orange-kicker">WHEN TO CONTACT US</p><h2>This service may be right for:</h2><div className="check-list">{service.idealFor.map((item) => <span key={item}><Check />{item}</span>)}</div><p>Not sure which service fits the damage? Send photographs on WhatsApp and the workshop will point you in the right direction.</p></div>
+        <div className="ideal-image"><Image src={service.image} alt={service.imageAlt} fill sizes="(max-width: 900px) 100vw, 50vw" style={{ objectFit: "cover" }} /></div>
+        <div className="ideal-copy"><p className="section-kicker orange-kicker">WHEN TO CONTACT US</p><h2>This service may be right for:</h2><div className="check-list">{service.idealFor.map((item) => <span key={item}><Check />{item}</span>)}</div><p>Not sure which service fits the damage? Start an assessment or send photographs and the workshop can guide the next step.</p></div>
       </section>
 
       <section className="process-section section-light">
@@ -31,11 +33,11 @@ export function ServiceDetail({ service }: { service: Service }) {
       </section>
 
       <section className="related-section section-light">
-        <div className="section-heading split-heading"><div><p className="section-kicker">RELATED SERVICES</p><h2>Complete the repair properly.</h2></div><a className="text-link dark-text-link" href="/services">View all services <ArrowRight /></a></div>
-        <div className="related-grid">{related.map((item) => <a key={item.slug} href={`/services/${item.slug}`}><img src={item.image} alt={item.imageAlt} /><span><small>{item.kicker}</small><strong>{item.title}</strong><em>Explore service <ArrowRight /></em></span></a>)}</div>
+        <div className="section-heading split-heading"><div><p className="section-kicker">RELATED SERVICES</p><h2>Complete the work properly.</h2></div><Link className="text-link dark-text-link" href="/services">View all services <ArrowRight /></Link></div>
+        <div className="related-grid">{related.map((item) => <Link key={item.slug} href={`/services/${item.slug}`}><Image src={item.image} alt={item.imageAlt} width={760} height={520} sizes="(max-width: 760px) 100vw, 33vw" /><span><small>{item.kicker}</small><strong>{item.title}</strong><em>Explore service <ArrowRight /></em></span></Link>)}</div>
       </section>
 
-      <CtaBanner title={`Need ${service.shortTitle.toLowerCase()}?`} copy="Send the vehicle details and clear damage photographs. Rolling Dents will advise the next assessment step." />
+      <CtaBanner title={`Need ${service.shortTitle.toLowerCase()}?`} copy="Submit the vehicle details and clear photographs. Rolling Dents will advise the next assessment step." />
     </main>
   );
 }

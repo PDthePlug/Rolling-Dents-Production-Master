@@ -1,4 +1,4 @@
-import { ArrowRight, MessageCircle, Phone } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PHONE_DISPLAY, whatsappUrl } from "@/lib/rolling-dents";
 
