@@ -21,7 +21,8 @@ test("assessment persistence contract is present", async () => {
   assert.match(route, /storedPhotoCount/);
   assert.match(form, /fetch\(["']\/api\/assessments["']/);
   assert.match(form, /type="file"/);
-  assert.match(form, /Submit & continue in WhatsApp/);
+  assert.match(form, /Submit assessment/);
+  assert.match(form, /ASSESSMENT RECEIVED/);
 
   const config = JSON.parse(hosting);
   assert.equal(config.d1, "DB");
