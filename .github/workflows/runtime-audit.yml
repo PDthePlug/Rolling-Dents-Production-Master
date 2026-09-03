@@ -52,7 +52,7 @@ jobs:
 
       - name: Audit routes, media and responsive runtime
         run: |
-          cat > /tmp/runtime-audit.mjs <<'EOF'
+          cat > audit/runtime-audit.mjs <<'EOF'
           import { chromium } from 'playwright';
           import fs from 'node:fs/promises';
 
@@ -120,7 +120,7 @@ jobs:
           form.set('repairType', 'Accident damage');
           form.set('paymentRoute', 'Private repair');
           form.set('description', 'Controlled runtime audit submission.');
-          form.set('consent', 'true');
+          form.set('consent', 'yes');
           const apiResponse = await fetch(base + '/api/assessments', { method: 'POST', body: form });
           report.assessmentApi = { status: apiResponse.status, body: await apiResponse.text() };
 
@@ -130,10 +130,12 @@ jobs:
           const badMedia = report.media.filter(r => r.status !== 200);
           const overflow = Object.entries(report.viewports).flatMap(([vp, data]) => Object.entries(data.pages).filter(([,p]) => p.overflow).map(([path]) => `${vp}:${path}`));
           const browserErrors = Object.entries(report.viewports).flatMap(([vp, data]) => data.errors.map(e => ({ vp, ...e })));
-          console.log(JSON.stringify({ badRoutes, badMedia, overflow, browserErrors, assessmentApi: report.assessmentApi }, null, 2));
-          if (badRoutes.length || badMedia.length || overflow.length || browserErrors.length) process.exitCode = 1;
+          const failedRequests = Object.entries(report.viewports).flatMap(([vp, data]) => data.failedRequests.map(e => ({ vp, ...e })));
+          const brokenImages = Object.entries(report.viewports).flatMap(([vp, data]) => Object.entries(data.pages).flatMap(([path,p]) => p.images.filter(img => !img.complete || img.naturalWidth === 0).map(img => ({ vp, path, ...img }))));
+          console.log(JSON.stringify({ badRoutes, badMedia, overflow, browserErrors, failedRequests, brokenImages, assessmentApi: report.assessmentApi }, null, 2));
+          if (badRoutes.length || badMedia.length || overflow.length || browserErrors.length || failedRequests.length || brokenImages.length) process.exitCode = 1;
           EOF
-          node /tmp/runtime-audit.mjs
+          node audit/runtime-audit.mjs
 
       - name: Upload runtime evidence
         if: always()
