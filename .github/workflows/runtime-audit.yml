@@ -1,0 +1,144 @@
+name: Runtime Launch Audit
+
+on:
+  push:
+    branches: [audit/runtime-launch]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Clean install
+        run: npm ci
+
+      - name: Verify source
+        run: |
+          npm run lint
+          npm run build
+
+      - name: Install browser auditor
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Launch production candidate
+        run: |
+          mkdir -p audit
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 > audit/runtime.log 2>&1 &
+          echo $! > audit/runtime.pid
+          for i in {1..45}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then
+              echo 'Runtime ready'
+              exit 0
+            fi
+            sleep 2
+          done
+          cat audit/runtime.log
+          exit 1
+
+      - name: Audit routes, media and responsive runtime
+        run: |
+          cat > /tmp/runtime-audit.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs/promises';
+
+          const base = 'http://127.0.0.1:4173';
+          const routes = [
+            '/', '/services', '/services/accident-repair', '/services/dent-repair',
+            '/services/spray-painting', '/services/paint-correction', '/services/parts-replacement',
+            '/services/vehicle-detailing', '/services/classic-restoration', '/our-work',
+            '/repair-process', '/insurance-repairs', '/about', '/reviews', '/contact',
+            '/estimate', '/service-areas'
+          ];
+          const media = [
+            '/og.png','/favicon.svg','/media/black-gtr-finish.webp','/media/mercedes-paint-booth.webp',
+            '/media/rolling-dents-reception.webp','/media/toyota-finish.webp','/media/volkswagen-spray-booth.webp',
+            '/media/white-gtr-finish.webp','/media/workshop-entrance.webp','/media/zeiss-road-sign.webp'
+          ];
+
+          const report = { generatedAt: new Date().toISOString(), routes: [], media: [], viewports: {}, assessmentApi: null };
+          for (const path of [...routes, ...media]) {
+            const response = await fetch(base + path, { redirect: 'manual' });
+            const row = { path, status: response.status, type: response.headers.get('content-type') };
+            if (routes.includes(path)) report.routes.push(row); else report.media.push(row);
+          }
+
+          const browser = await chromium.launch({ headless: true });
+          for (const [label, viewport] of Object.entries({ desktop: { width: 1440, height: 1000 }, mobile: { width: 390, height: 844 } })) {
+            const context = await browser.newContext({ viewport });
+            const errors = [];
+            const failedRequests = [];
+            const pages = {};
+            for (const path of routes) {
+              const page = await context.newPage();
+              page.on('console', msg => { if (msg.type() === 'error') errors.push({ path, text: msg.text() }); });
+              page.on('pageerror', error => errors.push({ path, text: error.message }));
+              page.on('requestfailed', request => failedRequests.push({ path, url: request.url(), error: request.failure()?.errorText }));
+              const response = await page.goto(base + path, { waitUntil: 'networkidle', timeout: 30000 });
+              const metrics = await page.evaluate(() => ({
+                title: document.title,
+                h1: document.querySelector('h1')?.textContent?.trim() ?? '',
+                scrollWidth: document.documentElement.scrollWidth,
+                clientWidth: document.documentElement.clientWidth,
+                bodyScrollWidth: document.body.scrollWidth,
+                links: [...document.querySelectorAll('a[href]')].map(a => a.getAttribute('href')).filter(Boolean),
+                images: [...document.images].map(img => ({ src: img.currentSrc || img.src, complete: img.complete, naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight }))
+              }));
+              pages[path] = { status: response?.status() ?? null, ...metrics, overflow: metrics.scrollWidth > metrics.clientWidth + 1 || metrics.bodyScrollWidth > metrics.clientWidth + 1 };
+              if (['/', '/estimate', '/repair-process'].includes(path)) {
+                const safe = path === '/' ? 'home' : path.slice(1);
+                await page.screenshot({ path: `audit/${safe}-${label}.png`, fullPage: true });
+              }
+              await page.close();
+            }
+            report.viewports[label] = { pages, errors, failedRequests };
+            await context.close();
+          }
+          await browser.close();
+
+          const form = new FormData();
+          form.set('name', 'Runtime Audit');
+          form.set('mobile', '0820000000');
+          form.set('make', 'Toyota');
+          form.set('model', 'Corolla');
+          form.set('year', '2022');
+          form.set('registration', 'AUDIT GP');
+          form.set('repairType', 'Accident damage');
+          form.set('paymentRoute', 'Private repair');
+          form.set('description', 'Controlled runtime audit submission.');
+          form.set('consent', 'true');
+          const apiResponse = await fetch(base + '/api/assessments', { method: 'POST', body: form });
+          report.assessmentApi = { status: apiResponse.status, body: await apiResponse.text() };
+
+          await fs.writeFile('audit/runtime-audit.json', JSON.stringify(report, null, 2));
+
+          const badRoutes = report.routes.filter(r => r.status !== 200);
+          const badMedia = report.media.filter(r => r.status !== 200);
+          const overflow = Object.entries(report.viewports).flatMap(([vp, data]) => Object.entries(data.pages).filter(([,p]) => p.overflow).map(([path]) => `${vp}:${path}`));
+          const browserErrors = Object.entries(report.viewports).flatMap(([vp, data]) => data.errors.map(e => ({ vp, ...e })));
+          console.log(JSON.stringify({ badRoutes, badMedia, overflow, browserErrors, assessmentApi: report.assessmentApi }, null, 2));
+          if (badRoutes.length || badMedia.length || overflow.length || browserErrors.length) process.exitCode = 1;
+          EOF
+          node /tmp/runtime-audit.mjs
+
+      - name: Upload runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rolling-dents-runtime-audit
+          path: audit/
+          if-no-files-found: error
