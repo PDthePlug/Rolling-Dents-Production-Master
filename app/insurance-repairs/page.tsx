@@ -10,7 +10,7 @@ export const metadata = pageMetadata("Insurance Accident Repairs Roodepoort", "S
 const steps = [
   [Camera, "Send the damage", "Start with clear photographs, vehicle details and a short description of the accident."],
   [ClipboardCheck, "Workshop assessment", "Rolling Dents inspects the vehicle and confirms the visible repair requirements."],
-  [FileText, "Claim & authorisation", "The insurer's claim and authorisation requirements are followed before approved work begins."],
+  [FileText, "Claim & authorisation", "The insurer claim and authorisation requirements are followed before approved work begins."],
   [Wrench, "Body repair & paint", "Panels, parts and refinishing move through the agreed repair plan."],
   [ShieldCheck, "Quality check & collection", "The completed vehicle is inspected and prepared for handover."],
 ] as const;
@@ -36,7 +36,7 @@ export default function InsuranceRepairsPage() {
         <div className="faq-list">
           <details><summary>Should I contact my insurer before authorising repairs?<span>+</span></summary><p>Insurance repairs normally require a claim and authorisation process. Contact your insurer and share the claim stage with Rolling Dents before work is authorised.</p></details>
           <details><summary>Can photographs confirm the full repair cost?<span>+</span></summary><p>Photographs help with the first conversation, but concealed damage and component condition may only be clear during a physical workshop assessment.</p></details>
-          <details><summary>Does every insurer use the same repair process?<span>+</span></summary><p>No. Insurer requirements and repair-network rules vary. Confirm your insurer's requirements for the specific claim and bring the information you have to the workshop.</p></details>
+          <details><summary>Does every insurer use the same repair process?<span>+</span></summary><p>No. Insurer requirements and repair-network rules vary. Confirm the requirements for the specific claim and bring the information you have to the workshop.</p></details>
         </div>
       </section>
       <CtaBanner title="Start the claim conversation." copy="Submit the vehicle details and damage photographs, or continue directly on WhatsApp if that is faster." />
